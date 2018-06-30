@@ -473,6 +473,10 @@ func (k *ExtendedKey) Zero() {
 // returned if this should occur, so the caller must check for it and generate a
 // new seed accordingly.
 func NewMaster(seed []byte, net *chaincfg.Params) (*ExtendedKey, error) {
+	return NewMasterKey(seed, net.HDPublicKeyID[:])
+}
+
+func NewMasterKey(seed []byte, key []byte) (*ExtendedKey, error) {
 	// Per [BIP32], the seed must be in range [MinSeedBytes, MaxSeedBytes].
 	if len(seed) < MinSeedBytes || len(seed) > MaxSeedBytes {
 		return nil, ErrInvalidSeedLen
@@ -497,7 +501,7 @@ func NewMaster(seed []byte, net *chaincfg.Params) (*ExtendedKey, error) {
 	}
 
 	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
-	return NewExtendedKey(net.HDPrivateKeyID[:], secretKey, chainCode,
+	return NewExtendedKey(key, secretKey, chainCode,
 		parentFP, 0, 0, true), nil
 }
 
